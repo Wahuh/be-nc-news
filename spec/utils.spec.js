@@ -33,8 +33,71 @@ describe("formatDates", () => {
     ];
     expect(actual).to.deep.equal(expected);
   });
+
+  it("does not mutate the input array", () => {
+    const input = [{ created_at: 1481662720516 }];
+    const copy = [{ created_at: 1481662720516 }];
+    formatDates(input);
+    expect(input).to.deep.equal(copy);
+  });
+
+  it("returns a new array", () => {
+    const input = [{ created_at: 1481662720516 }];
+    const actual = formatDates(input);
+    expect(actual).to.be.an("array");
+    expect(actual).to.not.equal(input);
+  });
 });
 
-describe("makeRefObj", () => {});
+describe("makeRefObj", () => {
+  it("returns an empty object when passed an empty array", () => {
+    const input = [];
+    const actual = makeRefObj(input);
+    const expected = {};
+    expect(actual).to.deep.equal(expected);
+  });
+
+  it("returns a reference object with a key and value when passed an array with one article object", () => {
+    const input = [
+      { article_id: 1, title: "Living in the shadow of a great man" }
+    ];
+    const actual = makeRefObj(input);
+    const expected = { "Living in the shadow of a great man": 1 };
+    expect(actual).to.deep.equal(expected);
+  });
+
+  it("returns a reference object with multiple key values when passed an array with multiple articles", () => {
+    const input = [
+      { article_id: 1, title: "Living in the shadow of a great man" },
+      { article_id: 2, title: "What to Cook This Week" }
+    ];
+    const actual = makeRefObj(input);
+    const expected = {
+      "Living in the shadow of a great man": 1,
+      "What to Cook This Week": 2
+    };
+    expect(actual).to.deep.equal(expected);
+  });
+
+  it("does not mutate the input array", () => {
+    const input = [
+      { article_id: 1, title: "Living in the shadow of a great man" }
+    ];
+    const copy = [
+      { article_id: 1, title: "Living in the shadow of a great man" }
+    ];
+    formatDates(input);
+    expect(input).to.deep.equal(copy);
+  });
+
+  it("returns a new array", () => {
+    const input = [
+      { article_id: 1, title: "Living in the shadow of a great man" }
+    ];
+    const actual = formatDates(input);
+    expect(actual).to.be.an("array");
+    expect(actual).to.not.equal(input);
+  });
+});
 
 describe("formatComments", () => {});
