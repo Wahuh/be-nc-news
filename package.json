@@ -7,6 +7,8 @@
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "knex seed:run",
     "migration-make": "knex migrate:make",
+    "migration-latest": "knex migrate:latest",
+    "migrate-rollback": "knex migrate:rollback",
     "test-utils": "mocha spec/utils.spec.js",
     "test": "mocha spec/app.spec.js"
   },
