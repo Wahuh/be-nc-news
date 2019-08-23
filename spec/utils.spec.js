@@ -89,15 +89,138 @@ describe("makeRefObj", () => {
     formatDates(input);
     expect(input).to.deep.equal(copy);
   });
-
-  it("returns a new array", () => {
-    const input = [
-      { article_id: 1, title: "Living in the shadow of a great man" }
-    ];
-    const actual = formatDates(input);
-    expect(actual).to.be.an("array");
-    expect(actual).to.not.equal(input);
-  });
 });
 
-describe("formatComments", () => {});
+describe("formatComments", () => {
+  it("returns an empty array when passed an empty array and ref object", () => {
+    const comments = [];
+    const actual = formatComments(comments);
+    const expected = [];
+    expect(actual).to.deep.equal(expected);
+  });
+
+  it("renames the created_by key to author", () => {
+    const author = "butter_bridge";
+    const article_id = 2;
+    const ref = { "Living in the shadow of a great man": article_id };
+
+    const comments = [
+      { created_by: author, belongs_to: "Living in the shadow of a great man" }
+    ];
+    const [comment] = formatComments(comments, ref);
+    expect(comment.author).to.equal(author);
+  });
+
+  it("renames the belongs_to key to article_id", () => {
+    const comments = [{ belongs_to: "Living in the shadow of a great man" }];
+    const article_id = 2;
+    const ref = { "Living in the shadow of a great man": article_id };
+    const [comment] = formatComments(comments, ref);
+    expect(comment.hasOwnProperty("article_id")).to.be.true;
+  });
+
+  it("sets article_id to the corresponding title value from the reference object", () => {
+    const comments = [{ belongs_to: "Living in the shadow of a great man" }];
+    const article_id = 2;
+    const ref = { "Living in the shadow of a great man": article_id };
+    const [comment] = formatComments(comments, ref);
+    expect(comment.article_id).to.equal(article_id);
+  });
+
+  it("converts the created_at property to a Date object", () => {
+    const comments = [
+      {
+        belongs_to: "Living in the shadow of a great man",
+        created_at: 1511354163389
+      }
+    ];
+    const article_id = 2;
+    const ref = { "Living in the shadow of a great man": article_id };
+
+    const [comment] = formatComments(comments, ref);
+    expect(comment.created_at).to.deep.equal(new Date(1511354163389));
+  });
+
+  it("maintains the rest of the comment's properties", () => {
+    const comments = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const ref = { "Living in the shadow of a great man": 2 };
+
+    const [{ author, article_id, created_at, ...rest }] = formatComments(
+      comments,
+      ref
+    );
+    expect(rest).to.deep.equal({
+      votes: 16,
+      body:
+        "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+    });
+  });
+
+  it("handles multiple comments", () => {
+    const comments = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      },
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 14,
+        created_at: 1479818163389
+      }
+    ];
+    const ref = {
+      "Living in the shadow of a great man": 2,
+      "They're not exactly dogs, are they?": 3
+    };
+
+    const actual = formatComments(comments, ref);
+    expect(actual).to.deep.equal([
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        article_id: 3,
+        author: "butter_bridge",
+        votes: 16,
+        created_at: new Date(1511354163389)
+      },
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        article_id: 2,
+        author: "butter_bridge",
+        votes: 14,
+        created_at: new Date(1479818163389)
+      }
+    ]);
+  });
+
+  it("does not mutate the comments array", () => {
+    const comments = [{ created_by: "butter_bridge" }];
+    const copy = [{ created_by: "butter_bridge" }];
+    formatDates(comments);
+    expect(comments).to.deep.equal(copy);
+  });
+
+  it("returns a new array", () => {
+    const comments = [{ created_by: "butter_bridge" }];
+    const actual = formatDates(comments);
+    expect(actual).to.be.an("array");
+    expect(actual).to.not.equal(comments);
+  });
+});

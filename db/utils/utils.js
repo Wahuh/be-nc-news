@@ -11,4 +11,15 @@ exports.makeRefObj = list => {
   }, {});
 };
 
-exports.formatComments = (comments, articleRef) => {};
+exports.formatComments = (comments, articleRef) => {
+  if (!comments.length) return [];
+  return comments.map(comment => {
+    const { created_by, belongs_to, created_at, ...rest } = comment;
+    return {
+      ...rest,
+      author: created_by,
+      article_id: articleRef[belongs_to],
+      created_at: new Date(created_at)
+    };
+  });
+};
