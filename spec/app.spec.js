@@ -10,7 +10,7 @@ describe("/api", () => {
 
   describe("/topics", () => {
     describe("GET", () => {
-      it("status 200: returns an array of topic objects with slug and description properties", () => {
+      it("status 200: returns an object with a topics key containing array of topic objects with slug and description properties", () => {
         return request(app)
           .get("/api/topics")
           .expect(200)
