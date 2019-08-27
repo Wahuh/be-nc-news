@@ -10,7 +10,8 @@
     "migration-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
     "test-utils": "mocha spec/utils.spec.js",
-    "test": "mocha spec/*.spec.js"
+    "test": "mocha spec/*.spec.js",
+    "dev": "nodemon listen.js"
   },
   "repository": {
     "type": "git",
@@ -24,11 +25,13 @@
   },
   "homepage": "https://github.com/northcoders/be-nc-news#readme",
   "dependencies": {
+    "express": "^4.17.1",
     "knex": "^0.19.2",
     "pg": "^7.12.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.2.0"
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.1"
   }
 }
