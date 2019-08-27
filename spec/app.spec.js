@@ -10,7 +10,7 @@ describe("/api", () => {
     return connection.seed.run();
   });
   after(() => {
-    connection.destroy();
+    return connection.destroy();
   });
 
   describe("/topics", () => {
@@ -37,6 +37,16 @@ describe("/api", () => {
           .then(response => {
             const { user } = response.body;
             expect(user).to.have.all.keys(["username", "avatar_url", "name"]);
+          });
+      });
+
+      it("status 404: returns an object with an error message", () => {
+        return request(app)
+          .get("/api/users/idonotexist")
+          .expect(404)
+          .then(response => {
+            const { msg } = response.body;
+            expect(msg).to.equal("User not found");
           });
       });
     });
