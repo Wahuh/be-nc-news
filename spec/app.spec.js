@@ -51,4 +51,158 @@ describe("/api", () => {
       });
     });
   });
+
+  describe("/articles", () => {
+    describe("/:article_id", () => {
+      describe("GET", () => {
+        it("status 200: returns an object with an article key containing an object with specific properties", () => {
+          return request(app)
+            .get("/api/articles/1")
+            .expect(200)
+            .then(response => {
+              const { article } = response.body;
+              expect(article).to.have.all.keys([
+                "author",
+                "title",
+                "article_id",
+                "body",
+                "topic",
+                "created_at",
+                "votes",
+                "comment_count"
+              ]);
+            });
+        });
+
+        it("status 400: returns an object with an error message", () => {
+          return request(app)
+            .get("/api/articles/hello")
+            .expect(400)
+            .then(response => {
+              const { msg } = response.body;
+              expect(msg).to.equal("Invalid article id");
+            });
+        });
+
+        it("status 404: returns an object with an error message", () => {
+          return request(app)
+            .get("/api/articles/9000")
+            .expect(404)
+            .then(response => {
+              const { msg } = response.body;
+              expect(msg).to.equal("Article not found");
+            });
+        });
+      });
+
+      describe("PATCH", () => {
+        it("status 200: returns an object with an article key containing an object with updated properties", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: 1 })
+            .expect(200)
+            .then(response => {
+              const { article } = response.body;
+              expect(article).to.have.all.keys([
+                "article_id",
+                "author",
+                "title",
+                "body",
+                "topic",
+                "created_at",
+                "votes"
+              ]);
+            });
+        });
+
+        it("status 200: handles incrementing votes", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: 50 })
+            .expect(200)
+            .then(response => {
+              const { article } = response.body;
+              expect(article.votes).to.equal(150);
+            });
+        });
+
+        it("status 200: handles decrementing votes", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: -50 })
+            .expect(200)
+            .then(response => {
+              const { article } = response.body;
+              expect(article.votes).to.equal(50);
+            });
+        });
+
+        // it("status 400: returns an object with an error message if votes will be decreased to less than 0", () => {
+        //   return request(app)
+        //     .patch("/api/articles/1")
+        //     .send({ inc_votes: -10000 })
+        //     .expect(400)
+        //     .then(response => {
+        //       const { msg } = response.body;
+        //       expect(msg).to.equal("Article votes cannot go below 0");
+        //     });
+        // });
+
+        it("status 400: returns an object with an error message if article id is not a number", () => {
+          return request(app)
+            .patch("/api/articles/notANumber")
+            .send({ inc_votes: 50 })
+            .expect(400)
+            .then(response => {
+              const { msg } = response.body;
+              expect(msg).to.equal("Invalid article id");
+            });
+        });
+
+        it("status 400: returns an object with an error message if inc_votes is not a number", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: "notANumber" })
+            .expect(400)
+            .then(response => {
+              const { msg } = response.body;
+              expect(msg).to.equal("inc_votes must be a number");
+            });
+        });
+
+        it("status 404: returns an object with an error message if article_id does not exist", () => {
+          return request(app)
+            .patch("/api/articles/9000")
+            .send({ inc_votes: 50 })
+            .expect(404)
+            .then(response => {
+              const { msg } = response.body;
+              expect(msg).to.equal("Article not found");
+            });
+        });
+      });
+
+      // describe("/comments", () => {
+      //   describe("POST", () => {
+      //     it("status 201: returns an object with a key of comment containing the updated comment object", () => {
+      //       return request(app)
+      //         .post("/api/articles/1/comments")
+      //         .send({ username: "Thanh", body: "Fantastic article" })
+      //         .expect(201)
+      //         .then(response => {
+      //           const { comment } = response.body;
+      //           expect(comment).to.have.all.keys([
+      //             "comment_id",
+      //             "author",
+      //             "article_id",
+      //             "votes",
+      //             "created_at",
+      //             "body"
+      //           ]);
+      //         });
+      //     });
+      //   });
+      // });
+    });
+  });
 });

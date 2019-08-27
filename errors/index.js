@@ -1,4 +1,5 @@
 const handle400Errors = (err, req, res, next) => {
+  console.log(err);
   const { status, msg } = err;
   if (status === 400) {
     res.status(status).json({ msg });
