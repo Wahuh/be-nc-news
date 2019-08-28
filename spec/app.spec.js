@@ -356,6 +356,17 @@ describe("/api", () => {
             });
         });
 
+        it("status 400: returns an error message if there are extra properties on the request body", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: 1, name: "Mitch" })
+            .expect(400)
+            .then(response => {
+              const { msg } = response.body;
+              expect(msg).to.equal("Invalid properties on body");
+            });
+        });
+
         it("status 404: returns an error message if article_id does not exist", () => {
           return request(app)
             .patch("/api/articles/9000")
