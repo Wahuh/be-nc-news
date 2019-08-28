@@ -1,5 +1,39 @@
 const connection = require("../db/connection");
 
+const selectArticles = query => {
+  const { sort_by, order, author, topic } = query;
+  if (order) {
+    if (order === "asc" || order === "desc") {
+    } else {
+      return Promise.reject({ status: 400, msg: "Invalid order query" });
+    }
+  }
+
+  return connection
+    .select(
+      "articles.author",
+      "title",
+      "articles.article_id",
+      "articles.body",
+      "topic",
+      "articles.created_at",
+      "articles.votes"
+    )
+    .modify(query => {
+      if (author) {
+        query.where({ "articles.author": author });
+      }
+      if (topic) {
+        query.where({ "articles.topic": topic });
+      }
+    })
+    .from("articles")
+    .join("comments", { "articles.article_id": "comments.article_id" })
+    .count("comments.article_id", { as: "comment_count" })
+    .groupBy("articles.article_id")
+    .orderBy(sort_by || "created_at", order || "desc");
+};
+
 const selectArticleById = article_id => {
   if (isNaN(+article_id)) {
     return Promise.reject({ status: 400, msg: "Invalid article id" });
@@ -47,4 +81,4 @@ const updateArticle = (body, article_id) => {
     });
 };
 
-module.exports = { selectArticleById, updateArticle };
+module.exports = { selectArticles, selectArticleById, updateArticle };
