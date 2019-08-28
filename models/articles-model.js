@@ -63,27 +63,24 @@ const selectArticleById = article_id => {
 
 const updateArticle = (body, article_id) => {
   const { inc_votes } = body;
-  if (!inc_votes)
-    return Promise.reject({
-      status: 400,
-      msg: "inc_votes is required in body"
-    });
 
   if (isNaN(article_id)) {
     return Promise.reject({ status: 400, msg: "Invalid article id" });
   }
-  if (isNaN(inc_votes)) {
+  if (inc_votes && isNaN(inc_votes)) {
     return Promise.reject({ status: 400, msg: "inc_votes must be a number" });
   }
 
   return connection("articles")
     .where({ article_id })
-    .increment({ votes: inc_votes })
+    .increment({ votes: inc_votes || 0 })
     .returning("*")
     .then(([article]) => {
       if (!article)
         return Promise.reject({ status: 404, msg: "Article not found" });
-      return article;
+      else {
+        return article;
+      }
     });
 };
 
