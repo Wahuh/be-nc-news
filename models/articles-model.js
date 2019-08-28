@@ -35,7 +35,7 @@ const selectArticles = query => {
 };
 
 const selectArticleById = article_id => {
-  if (isNaN(+article_id)) {
+  if (isNaN(article_id)) {
     return Promise.reject({ status: 400, msg: "Invalid article id" });
   }
   return connection
@@ -63,10 +63,10 @@ const selectArticleById = article_id => {
 
 const updateArticle = (body, article_id) => {
   const { inc_votes } = body;
-  if (isNaN(+article_id)) {
+  if (isNaN(article_id)) {
     return Promise.reject({ status: 400, msg: "Invalid article id" });
   }
-  if (isNaN(+inc_votes)) {
+  if (isNaN(inc_votes)) {
     return Promise.reject({ status: 400, msg: "inc_votes must be a number" });
   }
 

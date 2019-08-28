@@ -9,7 +9,7 @@ const selectCommentsByArticleId = (article_id, query) => {
     }
   }
 
-  if (isNaN(+article_id)) {
+  if (isNaN(article_id)) {
     return Promise.reject({ status: 400, msg: "Invalid article id" });
   }
   return connection("articles")
@@ -64,7 +64,7 @@ const insertComment = (reqBody, article_id) => {
 
 const updateComment = (comment_id, body) => {
   const { inc_votes } = body;
-  if (isNaN(+inc_votes)) {
+  if (isNaN(inc_votes)) {
     return Promise.reject({
       status: 400,
       msg: "Invalid body parameter inc_votes"
