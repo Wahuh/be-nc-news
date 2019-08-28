@@ -11,6 +11,22 @@ describe("/api", () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
 
+  describe('INVALID METHODS', () => {
+    it("status 405: returns an error message when client uses an invalid message", () => {
+      const methods = ["patch", "post", "delete", "put"];
+      const promises = methods.map(method => {
+        return request(app)
+          [method]("/api")
+          .expect(405)
+          .then(response => {
+            const { msg } = response.body;
+            expect(msg).to.equal("Invalid method");
+          });
+      });
+      return Promise.all(promises);
+    })
+  })
+
   describe("/topics", () => {
     describe("GET", () => {
       it("status 200: returns an array of topic objects with slug and description properties", () => {
@@ -114,6 +130,7 @@ describe("/api", () => {
           .expect(200)
           .then(response => {
             const { articles } = response.body;
+            console.log(articles);
             expect(articles).to.be.descendingBy("created_at");
           });
       });
