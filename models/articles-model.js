@@ -62,7 +62,7 @@ const selectArticleById = article_id => {
 };
 
 const updateArticle = (body, article_id) => {
-  const { inc_votes, ...rest } = body;
+  const { inc_votes } = body;
   if (!inc_votes)
     return Promise.reject({
       status: 400,
@@ -74,9 +74,6 @@ const updateArticle = (body, article_id) => {
   }
   if (isNaN(inc_votes)) {
     return Promise.reject({ status: 400, msg: "inc_votes must be a number" });
-  }
-  if (Object.keys(rest).length) {
-    return Promise.reject({ status: 400, msg: "Invalid properties on body" });
   }
 
   return connection("articles")

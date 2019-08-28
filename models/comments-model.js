@@ -84,13 +84,6 @@ const updateComment = (comment_id, body) => {
     });
   }
 
-  if (Object.keys(rest).length) {
-    return Promise.reject({
-      status: 400,
-      msg: "Invalid properties on body"
-    });
-  }
-
   return connection("comments")
     .where({ comment_id })
     .increment({ votes: inc_votes })

@@ -322,6 +322,24 @@ describe("/api", () => {
               expect(article.votes).to.equal(50);
             });
         });
+        it("status 200: ignores extra properties on the body", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({ inc_votes: 1, name: "Mitch" })
+            .expect(200)
+            .then(response => {
+              const { article } = response.body;
+              expect(article).to.have.all.keys([
+                "article_id",
+                "author",
+                "title",
+                "body",
+                "topic",
+                "created_at",
+                "votes"
+              ]);
+            });
+        });
 
         it("status 400: returns an error message if article id is not a number", () => {
           return request(app)
@@ -353,17 +371,6 @@ describe("/api", () => {
             .then(response => {
               const { msg } = response.body;
               expect(msg).to.equal("inc_votes must be a number");
-            });
-        });
-
-        it("status 400: returns an error message if there are extra properties on the request body", () => {
-          return request(app)
-            .patch("/api/articles/1")
-            .send({ inc_votes: 1, name: "Mitch" })
-            .expect(400)
-            .then(response => {
-              const { msg } = response.body;
-              expect(msg).to.equal("Invalid properties on body");
             });
         });
 
@@ -603,6 +610,25 @@ describe("/api", () => {
             });
         });
 
+        it("status 200: ignores extra properties on the body", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: 1, name: "Mitch" })
+            .expect(200)
+            .then(response => {
+              const { comment } = response.body;
+
+              expect(comment).to.have.all.keys([
+                "comment_id",
+                "author",
+                "article_id",
+                "votes",
+                "created_at",
+                "body"
+              ]);
+            });
+        });
+
         it("status 200: returns an updated comment object with incremented votes", () => {
           return request(app)
             .patch("/api/comments/1")
@@ -648,18 +674,6 @@ describe("/api", () => {
               const { msg } = response.body;
 
               expect(msg).to.equal("Invalid body parameter inc_votes");
-            });
-        });
-
-        it("status 400: returns an error message if there are extra properties on the body", () => {
-          return request(app)
-            .patch("/api/comments/1")
-            .send({ inc_votes: 1, name: "Mitch" })
-            .expect(400)
-            .then(response => {
-              const { msg } = response.body;
-
-              expect(msg).to.equal("Invalid properties on body");
             });
         });
 
