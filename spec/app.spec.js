@@ -8,21 +8,18 @@ const { expect } = chai;
 chai.use(require("chai-sorted"));
 
 describe("/api", () => {
-  beforeEach(() => {
-    return connection.seed.run();
-  });
-  after(() => {
-    return connection.destroy();
-  });
+  beforeEach(() => connection.seed.run());
+  after(() => connection.destroy());
 
   describe("/topics", () => {
     describe("GET", () => {
-      it("status 200: returns an object with a topics key containing an array of objects with slug and description properties", () => {
+      it("status 200: returns an array of topic objects with slug and description properties", () => {
         return request(app)
           .get("/api/topics")
           .expect(200)
           .then(response => {
             const { topics } = response.body;
+            expect(topics).to.be.an("array");
             const [topic] = topics;
             expect(topic).to.have.all.keys(["slug", "description"]);
           });
@@ -49,7 +46,7 @@ describe("/api", () => {
   describe("/users", () => {
     describe("/:username", () => {
       describe("GET", () => {
-        it("status 200: returns an object with a user key containing an object with username, avatar_url and name properties", () => {
+        it("status 200: returns a user object with username, avatar_url and name properties", () => {
           return request(app)
             .get("/api/users/lurker")
             .expect(200)
@@ -227,6 +224,7 @@ describe("/api", () => {
         return Promise.all(promises);
       });
     });
+    
     describe("/:article_id", () => {
       describe("GET", () => {
         it("status 200: returns an object with an article key containing an object with specific properties", () => {
