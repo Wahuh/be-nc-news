@@ -28,7 +28,7 @@ const selectArticles = query => {
       }
     })
     .from("articles")
-    .join("comments", { "articles.article_id": "comments.article_id" })
+    .leftJoin("comments", { "articles.article_id": "comments.article_id" })
     .count("comments.article_id", { as: "comment_count" })
     .groupBy("articles.article_id")
     .orderBy(sort_by || "created_at", order || "desc");

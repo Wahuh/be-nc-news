@@ -110,7 +110,7 @@ describe("/api", () => {
           .then(response => {
             const { articles } = response.body;
             expect(articles).to.be.an("array");
-            const [article] = articles;
+            const [article, secondArticle] = articles;
             expect(article).to.have.all.keys([
               "author",
               "title",
@@ -121,6 +121,7 @@ describe("/api", () => {
               "body",
               "comment_count"
             ]);
+            expect(secondArticle.article_id).to.equal(2);
           });
       });
 
