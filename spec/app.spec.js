@@ -334,6 +334,17 @@ describe("/api", () => {
             });
         });
 
+        it("status 400: returns an error message if inc_votes is missing", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .send({})
+            .expect(400)
+            .then(response => {
+              const { msg } = response.body;
+              expect(msg).to.equal("inc_votes is required in body");
+            });
+        });
+
         it("status 400: returns an error message if inc_votes is not a number", () => {
           return request(app)
             .patch("/api/articles/1")

@@ -63,6 +63,12 @@ const selectArticleById = article_id => {
 
 const updateArticle = (body, article_id) => {
   const { inc_votes } = body;
+  if (!inc_votes)
+    return Promise.reject({
+      status: 400,
+      msg: "inc_votes is required in body"
+    });
+
   if (isNaN(article_id)) {
     return Promise.reject({ status: 400, msg: "Invalid article id" });
   }
