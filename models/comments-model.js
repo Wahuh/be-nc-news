@@ -62,4 +62,34 @@ const insertComment = (reqBody, article_id) => {
     });
 };
 
-module.exports = { insertComment, selectCommentsByArticleId };
+const updateComment = (comment_id, body) => {
+  const { inc_votes } = body;
+  if (isNaN(+inc_votes)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid body parameter inc_votes"
+    });
+  }
+  if (isNaN(comment_id)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid comment_id"
+    });
+  }
+  return connection("comments")
+    .where({ comment_id })
+    .increment({ votes: inc_votes })
+    .returning("*")
+    .then(([comment]) => {
+      if (comment) {
+        return comment;
+      } else {
+        return Promise.reject({
+          status: 404,
+          msg: "Comment not found"
+        });
+      }
+    });
+};
+
+module.exports = { insertComment, selectCommentsByArticleId, updateComment };

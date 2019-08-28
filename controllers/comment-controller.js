@@ -1,6 +1,7 @@
 const {
   insertComment,
-  selectCommentsByArticleId
+  selectCommentsByArticleId,
+  updateComment
 } = require("../models/comments-model");
 
 const postComment = (req, res, next) => {
@@ -21,4 +22,13 @@ const getCommentsByArticleId = (req, res, next) => {
     .catch(next);
 };
 
-module.exports = { postComment, getCommentsByArticleId };
+const patchComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  updateComment(comment_id, req.body)
+    .then(comment => {
+      res.status(200).json({ comment });
+    })
+    .catch(next);
+};
+
+module.exports = { patchComment, postComment, getCommentsByArticleId };

@@ -311,17 +311,6 @@ describe("/api", () => {
             });
         });
 
-        // it("status 400: returns an object with an error message if votes will be decreased to less than 0", () => {
-        //   return request(app)
-        //     .patch("/api/articles/1")
-        //     .send({ inc_votes: -10000 })
-        //     .expect(400)
-        //     .then(response => {
-        //       const { msg } = response.body;
-        //       expect(msg).to.equal("Article votes cannot go below 0");
-        //     });
-        // });
-
         it("status 400: returns an object with an error message if article id is not a number", () => {
           return request(app)
             .patch("/api/articles/notANumber")
@@ -549,10 +538,103 @@ describe("/api", () => {
   });
 
   describe("/comments", () => {
-    describe('/:comment_id', () => {
+    describe("/:comment_id", () => {
       describe("PATCH", () => {
+        it("status 200: returns an updated comment object with the expected properties", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: 1 })
+            .expect(200)
+            .then(response => {
+              const { comment } = response.body;
 
-      })
-    })
+              expect(comment).to.have.all.keys([
+                "comment_id",
+                "author",
+                "article_id",
+                "votes",
+                "created_at",
+                "body"
+              ]);
+            });
+        });
+
+        it("status 200: returns an updated comment object with incremented votes", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: 200 })
+            .expect(200)
+            .then(response => {
+              const { comment } = response.body;
+
+              expect(comment.votes).to.equal(216);
+            });
+        });
+
+        it("status 200: returns an updated comment object with decremented votes", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: -200 })
+            .expect(200)
+            .then(response => {
+              const { comment } = response.body;
+
+              expect(comment.votes).to.equal(-184);
+            });
+        });
+
+        it("status 400: returns an error message if inc_votes is invalid", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: "hello" })
+            .expect(400)
+            .then(response => {
+              const { msg } = response.body;
+
+              expect(msg).to.equal("Invalid body parameter inc_votes");
+            });
+        });
+
+        it("status 400: returns an error message if comment_id is invalid", () => {
+          return request(app)
+            .patch("/api/comments/hello")
+            .send({ inc_votes: 1 })
+            .expect(400)
+            .then(response => {
+              const { msg } = response.body;
+
+              expect(msg).to.equal("Invalid comment_id");
+            });
+        });
+
+        it("status 404: returns an error message if comment_id does not exist", () => {
+          return request(app)
+            .patch("/api/comments/9000")
+            .send({ inc_votes: 1 })
+            .expect(404)
+            .then(response => {
+              const { msg } = response.body;
+
+              expect(msg).to.equal("Comment not found");
+            });
+        });
+      });
+
+      describe.only("INVALID METHODS", () => {
+        it("status 405: returns on object with an error message when client uses an invalid method", () => {
+          const methods = ["get", "post", "delete", "put"];
+          const promises = methods.map(method => {
+            return request(app)
+              [method]("/api/comments/1")
+              .expect(405)
+              .then(response => {
+                const { msg } = response.body;
+                expect(msg).to.equal("Invalid method");
+              });
+          });
+          return Promise.all(promises);
+        });
+      });
+    });
   });
 });
