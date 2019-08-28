@@ -12,6 +12,9 @@ articlesRouter
   .patch(patchArticle)
   .all(handle405Errors);
 
-articlesRouter.post("/:article_id/comments", postComment);
+articlesRouter
+  .route("/:article_id/comments")
+  .post(postComment)
+  .all(handle405Errors);
 
 module.exports = articlesRouter;
