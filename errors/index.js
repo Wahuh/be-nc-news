@@ -37,7 +37,6 @@ const handle422Errors = (err, req, res, next) => {
 };
 
 const handle405Errors = (req, res, next) => {
-  console.log("reached", req.url);
   res.status(405).json({ msg: "Invalid method" });
 };
 
