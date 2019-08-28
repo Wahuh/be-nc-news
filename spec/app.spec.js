@@ -3,7 +3,9 @@ process.env.NODE_ENV = "test";
 const request = require("supertest");
 const connection = require("../db/connection");
 const app = require("../app");
-const { expect } = require("chai");
+const chai = require("chai");
+const { expect } = chai;
+chai.use(require("chai-sorted"));
 
 describe("/api", () => {
   beforeEach(() => {
@@ -88,6 +90,7 @@ describe("/api", () => {
   });
 
   describe("/articles", () => {
+
     describe("/:article_id", () => {
       describe("GET", () => {
         it("status 200: returns an object with an article key containing an object with specific properties", () => {
@@ -319,6 +322,36 @@ describe("/api", () => {
               });
           });
 
+          it("status 200: returns an array of comment objects, sorted by created_at in descending order by default", () => {
+            return request(app)
+              .get("/api/articles/1/comments")
+              .expect(200)
+              .then(response => {
+                const { comments } = response.body;
+                expect(comments).to.be.descendingBy("created_at");
+              });
+          });
+
+          it("status 200: returns an array of comment objects sorted by a sort_by query column", () => {
+            return request(app)
+              .get("/api/articles/1/comments?sort_by=votes")
+              .expect(200)
+              .then(response => {
+                const { comments } = response.body;
+                expect(comments).to.be.descendingBy("votes");
+              });
+          });
+
+          it("status 200: returns an array of comment objects in an order specified by the query", () => {
+            return request(app)
+              .get("/api/articles/1/comments?order=asc")
+              .expect(200)
+              .then(response => {
+                const { comments } = response.body;
+                expect(comments).to.be.ascendingBy("created_at");
+              });
+          });
+
           it("status 400: returns an error message if the article_id is invalid", () => {
             return request(app)
               .get("/api/articles/hello/comments")
@@ -326,6 +359,26 @@ describe("/api", () => {
               .then(response => {
                 const { msg } = response.body;
                 expect(msg).to.equal("Invalid article id");
+              });
+          });
+
+          it("status 400: returns an error message if sort_by is invalid", () => {
+            return request(app)
+              .get("/api/articles/1/comments?sort_by=invalid")
+              .expect(400)
+              .then(response => {
+                const { msg } = response.body;
+                expect(msg).to.equal("Invalid query parameter");
+              });
+          });
+
+          it("status 400: returns an error message if order is invalid", () => {
+            return request(app)
+              .get("/api/articles/1/comments?order=invalid")
+              .expect(400)
+              .then(response => {
+                const { msg } = response.body;
+                expect(msg).to.equal("Invalid order query");
               });
           });
 

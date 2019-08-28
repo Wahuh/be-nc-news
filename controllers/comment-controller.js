@@ -14,7 +14,7 @@ const postComment = (req, res, next) => {
 
 const getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  selectCommentsByArticleId(article_id)
+  selectCommentsByArticleId(article_id, req.query)
     .then(comments => {
       res.status(200).json({ comments });
     })

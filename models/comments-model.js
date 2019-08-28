@@ -1,6 +1,14 @@
 const connection = require("../db/connection");
 
-const selectCommentsByArticleId = article_id => {
+const selectCommentsByArticleId = (article_id, query) => {
+  const { sort_by, order } = query;
+  if (order) {
+    if (order === "asc" || order === "desc") {
+    } else {
+      return Promise.reject({ status: 400, msg: "Invalid order query" });
+    }
+  }
+
   if (isNaN(+article_id)) {
     return Promise.reject({ status: 400, msg: "Invalid article id" });
   }
@@ -11,7 +19,8 @@ const selectCommentsByArticleId = article_id => {
       if (article) {
         return connection("comments")
           .select("comment_id", "votes", "created_at", "author", "body")
-          .where({ article_id });
+          .where({ article_id })
+          .orderBy(sort_by || "created_at", order || "desc");
       } else {
         return Promise.reject({
           status: 404,
