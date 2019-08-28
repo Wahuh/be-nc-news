@@ -32,7 +32,8 @@ const handle422Errors = (err, req, res, next) => {
 };
 
 const handle405Errors = (req, res, next) => {
-  res.status(405).json({ msg: "invalid method" });
+  console.log('reached', req.url)
+  res.status(405).json({ msg: "Invalid method" });
 };
 
-module.exports = { handle404Errors, handle400Errors, handle422Errors };
+module.exports = { handle404Errors, handle400Errors, handle405Errors, handle422Errors };
