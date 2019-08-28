@@ -627,6 +627,18 @@ describe("/api", () => {
             });
         });
 
+        it("status 400: returns an error message if inc_votes is missing", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({})
+            .expect(400)
+            .then(response => {
+              const { msg } = response.body;
+
+              expect(msg).to.equal("inc_votes is required in body");
+            });
+        });
+
         it("status 400: returns an error message if inc_votes is invalid", () => {
           return request(app)
             .patch("/api/comments/1")
@@ -636,6 +648,18 @@ describe("/api", () => {
               const { msg } = response.body;
 
               expect(msg).to.equal("Invalid body parameter inc_votes");
+            });
+        });
+
+        it("status 400: returns an error message if there are extra properties on the body", () => {
+          return request(app)
+            .patch("/api/comments/1")
+            .send({ inc_votes: 1, name: "Mitch" })
+            .expect(400)
+            .then(response => {
+              const { msg } = response.body;
+
+              expect(msg).to.equal("Invalid properties on body");
             });
         });
 

@@ -63,7 +63,14 @@ const insertComment = (reqBody, article_id) => {
 };
 
 const updateComment = (comment_id, body) => {
-  const { inc_votes } = body;
+  const { inc_votes, ...rest } = body;
+
+  if (!inc_votes)
+    return Promise.reject({
+      status: 400,
+      msg: "inc_votes is required in body"
+    });
+
   if (isNaN(inc_votes)) {
     return Promise.reject({
       status: 400,
@@ -76,6 +83,14 @@ const updateComment = (comment_id, body) => {
       msg: "Invalid comment_id"
     });
   }
+
+  if (Object.keys(rest).length) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid properties on body"
+    });
+  }
+
   return connection("comments")
     .where({ comment_id })
     .increment({ votes: inc_votes })
