@@ -27,7 +27,7 @@ describe("/api", () => {
     });
 
     describe("INVALID METHODS", () => {
-      it("status 405: returns on object with an error message when client uses an invalid method", () => {
+      it("status 405: returns an error message when client uses an invalid method", () => {
         const methods = ["patch", "post", "delete", "put"];
         const promises = methods.map(method => {
           return request(app)
@@ -56,7 +56,7 @@ describe("/api", () => {
             });
         });
 
-        it("status 404: returns an object with an error message", () => {
+        it("status 404: returns an error message if the username does not exist", () => {
           return request(app)
             .get("/api/users/idonotexist")
             .expect(404)
@@ -68,7 +68,7 @@ describe("/api", () => {
       });
 
       describe("INVALID METHODS", () => {
-        it("status 405: returns on object with an error message when client uses an invalid method", () => {
+        it("status 405: returns an error message when client uses an invalid method", () => {
           const methods = ["patch", "post", "delete", "put"];
           const promises = methods.map(method => {
             return request(app)
@@ -188,6 +188,20 @@ describe("/api", () => {
           });
       });
 
+      it("status 200: handles multiple queries", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch&sort_by=votes&order=asc")
+          .expect(200)
+          .then(response => {
+            const { articles } = response.body;
+            const shouldHaveSameTopic = articles.every(
+              ({ topic }) => topic === "mitch"
+            );
+            expect(shouldHaveSameTopic).to.be.true;
+            expect(articles).to.be.ascendingBy("votes");
+          });
+      });
+
       it("status 400: returns an error message if sort_by is invalid", () => {
         return request(app)
           .get("/api/articles?sort_by=invalid")
@@ -210,7 +224,7 @@ describe("/api", () => {
     });
 
     describe("INVALID METHODS", () => {
-      it("status 405: returns an object with an error message when client uses an invalid method", () => {
+      it("status 405: returns an error message when client uses an invalid method", () => {
         const methods = ["patch", "post", "delete", "put"];
         const promises = methods.map(method => {
           return request(app)
@@ -224,10 +238,10 @@ describe("/api", () => {
         return Promise.all(promises);
       });
     });
-    
+
     describe("/:article_id", () => {
       describe("GET", () => {
-        it("status 200: returns an object with an article key containing an object with specific properties", () => {
+        it("status 200: returns an article object with specific properties", () => {
           return request(app)
             .get("/api/articles/1")
             .expect(200)
@@ -246,7 +260,7 @@ describe("/api", () => {
             });
         });
 
-        it("status 400: returns an object with an error message", () => {
+        it("status 400: returns an error message when the article_id is invalid", () => {
           return request(app)
             .get("/api/articles/hello")
             .expect(400)
@@ -256,7 +270,7 @@ describe("/api", () => {
             });
         });
 
-        it("status 404: returns an object with an error message", () => {
+        it("status 404: returns an error message when the article_id does not exist", () => {
           return request(app)
             .get("/api/articles/9000")
             .expect(404)
@@ -268,7 +282,7 @@ describe("/api", () => {
       });
 
       describe("PATCH", () => {
-        it("status 200: returns an object with an article key containing an object with updated properties", () => {
+        it("status 200: returns an article object with updated properties", () => {
           return request(app)
             .patch("/api/articles/1")
             .send({ inc_votes: 1 })
@@ -309,7 +323,7 @@ describe("/api", () => {
             });
         });
 
-        it("status 400: returns an object with an error message if article id is not a number", () => {
+        it("status 400: returns an error message if article id is not a number", () => {
           return request(app)
             .patch("/api/articles/notANumber")
             .send({ inc_votes: 50 })
@@ -320,7 +334,7 @@ describe("/api", () => {
             });
         });
 
-        it("status 400: returns an object with an error message if inc_votes is not a number", () => {
+        it("status 400: returns an error message if inc_votes is not a number", () => {
           return request(app)
             .patch("/api/articles/1")
             .send({ inc_votes: "notANumber" })
@@ -331,7 +345,7 @@ describe("/api", () => {
             });
         });
 
-        it("status 404: returns an object with an error message if article_id does not exist", () => {
+        it("status 404: returns an error message if article_id does not exist", () => {
           return request(app)
             .patch("/api/articles/9000")
             .send({ inc_votes: 50 })
@@ -344,7 +358,7 @@ describe("/api", () => {
       });
 
       describe("INVALID METHODS", () => {
-        it("status 405: returns on object with an error message when client uses an invalid method", () => {
+        it("status 405: returns an error message when client uses an invalid method", () => {
           const methods = ["post", "delete", "put"];
           const promises = methods.map(method => {
             return request(app)
@@ -361,7 +375,7 @@ describe("/api", () => {
 
       describe("/comments", () => {
         describe("POST", () => {
-          it("status 201: returns an object with a key of comment containing the updated comment object", () => {
+          it("status 201: returns an updated comment object", () => {
             return request(app)
               .post("/api/articles/1/comments")
               .send({ username: "lurker", body: "Fantastic article" })
@@ -475,6 +489,16 @@ describe("/api", () => {
               });
           });
 
+          it("status 200: handles multiple queries", () => {
+            return request(app)
+              .get("/api/articles/1/comments?order=asc&sort_by=author")
+              .expect(200)
+              .then(response => {
+                const { comments } = response.body;
+                expect(comments).to.be.ascendingBy("author");
+              });
+          });
+
           it("status 400: returns an error message if the article_id is invalid", () => {
             return request(app)
               .get("/api/articles/hello/comments")
@@ -517,7 +541,7 @@ describe("/api", () => {
         });
 
         describe("INVALID METHODS", () => {
-          it("status 405: returns on object with an error message when client uses an invalid method", () => {
+          it("status 405: returns an error message when client uses an invalid method", () => {
             const methods = ["patch", "delete", "put"];
             const promises = methods.map(method => {
               return request(app)
@@ -647,7 +671,7 @@ describe("/api", () => {
       });
 
       describe("INVALID METHODS", () => {
-        it("status 405: returns an object with an error message when client uses an invalid method", () => {
+        it("status 405: returns an error message when client uses an invalid method", () => {
           const methods = ["get", "post", "put"];
           const promises = methods.map(method => {
             return request(app)
