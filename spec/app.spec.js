@@ -217,6 +217,22 @@ describe("/api", () => {
         });
       });
 
+      describe("INVALID METHODS", () => {
+        it("status 405: returns on object with an error message when client uses an invalid method", () => {
+          const methods = ["post", "delete", "put"];
+          const promises = methods.map(method => {
+            return request(app)
+              [method]("/api/articles/1")
+              .expect(405)
+              .then(response => {
+                const { msg } = response.body;
+                expect(msg).to.equal("Invalid method");
+              });
+          });
+          return Promise.all(promises);
+        });
+      })
+
       describe("/comments", () => {
         describe("POST", () => {
           it("status 201: returns an object with a key of comment containing the updated comment object", () => {
