@@ -1,5 +1,26 @@
 const connection = require("../db/connection");
 
+const selectCommentsByArticleId = article_id => {
+  if (isNaN(+article_id)) {
+    return Promise.reject({ status: 400, msg: "Invalid article id" });
+  }
+  return connection("articles")
+    .select("*")
+    .where({ article_id })
+    .then(([article]) => {
+      if (article) {
+        return connection("comments")
+          .select("comment_id", "votes", "created_at", "author", "body")
+          .where({ article_id });
+      } else {
+        return Promise.reject({
+          status: 404,
+          msg: "Article not found"
+        });
+      }
+    });
+};
+
 const insertComment = (reqBody, article_id) => {
   const { username, body } = reqBody;
   if (!body)
@@ -32,4 +53,4 @@ const insertComment = (reqBody, article_id) => {
     });
 };
 
-module.exports = { insertComment };
+module.exports = { insertComment, selectCommentsByArticleId };

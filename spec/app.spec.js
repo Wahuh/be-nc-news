@@ -300,9 +300,49 @@ describe("/api", () => {
           });
         });
 
+        describe("GET", () => {
+          it("status 200: returns an array of comment objects which have comment_id, votes, created_at, author and body properties", () => {
+            return request(app)
+              .get("/api/articles/1/comments")
+              .expect(200)
+              .then(response => {
+                const { comments } = response.body;
+                expect(comments).to.be.an("array");
+                const [comment] = comments;
+                expect(comment).to.have.all.keys([
+                  "comment_id",
+                  "votes",
+                  "created_at",
+                  "author",
+                  "body"
+                ]);
+              });
+          });
+
+          it("status 400: returns an error message if the article_id is invalid", () => {
+            return request(app)
+              .get("/api/articles/hello/comments")
+              .expect(400)
+              .then(response => {
+                const { msg } = response.body;
+                expect(msg).to.equal("Invalid article id");
+              });
+          });
+
+          it("status 404: returns an error message if the article_id does not exist", () => {
+            return request(app)
+              .get("/api/articles/9000/comments")
+              .expect(404)
+              .then(response => {
+                const { msg } = response.body;
+                expect(msg).to.equal("Article not found");
+              });
+          });
+        });
+
         describe("INVALID METHODS", () => {
           it("status 405: returns on object with an error message when client uses an invalid method", () => {
-            const methods = ["get", "patch", "delete", "put"];
+            const methods = ["patch", "delete", "put"];
             const promises = methods.map(method => {
               return request(app)
                 [method]("/api/articles/1/comments")
