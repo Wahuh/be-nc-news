@@ -620,9 +620,37 @@ describe("/api", () => {
         });
       });
 
-      describe.only("INVALID METHODS", () => {
-        it("status 405: returns on object with an error message when client uses an invalid method", () => {
-          const methods = ["get", "post", "delete", "put"];
+      describe("DELETE", () => {
+        it("status 204: no content when a comment is successfully deleted", () => {
+          return request(app)
+            .delete("/api/comments/1")
+            .expect(204);
+        });
+
+        it("status 400: returns an error message when the comment_id is invalid", () => {
+          return request(app)
+            .delete("/api/comments/hello")
+            .expect(400)
+            .then(response => {
+              const { msg } = response.body;
+              expect(msg).to.equal("Invalid comment_id");
+            });
+        });
+
+        it("status 404: returns an error message when the comment_id does not exist", () => {
+          return request(app)
+            .delete("/api/comments/9000")
+            .expect(404)
+            .then(response => {
+              const { msg } = response.body;
+              expect(msg).to.equal("Comment not found");
+            });
+        });
+      });
+
+      describe("INVALID METHODS", () => {
+        it("status 405: returns an object with an error message when client uses an invalid method", () => {
+          const methods = ["get", "post", "put"];
           const promises = methods.map(method => {
             return request(app)
               [method]("/api/comments/1")

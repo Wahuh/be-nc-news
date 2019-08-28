@@ -92,4 +92,31 @@ const updateComment = (comment_id, body) => {
     });
 };
 
-module.exports = { insertComment, selectCommentsByArticleId, updateComment };
+const removeComment = comment_id => {
+  if (isNaN(comment_id)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid comment_id"
+    });
+  }
+  return connection("comments")
+    .where({ comment_id })
+    .del()
+    .then(deleteCount => {
+      if (!deleteCount) {
+        return Promise.reject({
+          status: 404,
+          msg: "Comment not found"
+        });
+      } else {
+        return deleteCount;
+      }
+    });
+};
+
+module.exports = {
+  insertComment,
+  selectCommentsByArticleId,
+  updateComment,
+  removeComment
+};
