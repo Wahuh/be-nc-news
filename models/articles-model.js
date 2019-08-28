@@ -39,18 +39,10 @@ const selectArticleById = article_id => {
     return Promise.reject({ status: 400, msg: "Invalid article id" });
   }
   return connection
-    .select(
-      "articles.author",
-      "title",
-      "articles.article_id",
-      "articles.body",
-      "topic",
-      "articles.created_at",
-      "articles.votes"
-    )
+    .select("articles.*")
     .from("articles")
     .where({ "articles.article_id": article_id })
-    .join("comments", { "articles.article_id": "comments.article_id" })
+    .leftJoin("comments", { "articles.article_id": "comments.article_id" })
     .count("comments.article_id", { as: "comment_count" })
     .groupBy("articles.article_id")
     .then(([article]) => {

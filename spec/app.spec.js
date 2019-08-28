@@ -259,7 +259,7 @@ describe("/api", () => {
       describe("GET", () => {
         it("status 200: returns an article object with specific properties", () => {
           return request(app)
-            .get("/api/articles/1")
+            .get("/api/articles/2")
             .expect(200)
             .then(response => {
               const { article } = response.body;
