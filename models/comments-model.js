@@ -43,7 +43,9 @@ const insertComment = (reqBody, article_id) => {
       msg: "You can't post a comment without a username!"
     });
   }
-
+  if (isNaN(article_id)) {
+    return Promise.reject({ status: 400, msg: "Invalid article_id" });
+  }
   return connection("articles")
     .select("*")
     .where({ article_id })

@@ -11,7 +11,7 @@ describe("/api", () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
 
-  describe('INVALID METHODS', () => {
+  describe("INVALID METHODS", () => {
     it("status 405: returns an error message when client uses an invalid message", () => {
       const methods = ["patch", "post", "delete", "put"];
       const promises = methods.map(method => {
@@ -24,8 +24,8 @@ describe("/api", () => {
           });
       });
       return Promise.all(promises);
-    })
-  })
+    });
+  });
 
   describe("/topics", () => {
     describe("GET", () => {
@@ -130,7 +130,6 @@ describe("/api", () => {
           .expect(200)
           .then(response => {
             const { articles } = response.body;
-            console.log(articles);
             expect(articles).to.be.descendingBy("created_at");
           });
       });
@@ -460,6 +459,17 @@ describe("/api", () => {
                 expect(msg).to.equal(
                   "You can't post a comment without a username!"
                 );
+              });
+          });
+
+          it("status 400: returns an error message if the article_id is invalid", () => {
+            return request(app)
+              .post("/api/articles/invalid/comments")
+              .send({ username: "lurker", body: "Fantastic article" })
+              .expect(400)
+              .then(response => {
+                const { msg } = response.body;
+                expect(msg).to.equal("Invalid article_id");
               });
           });
 
