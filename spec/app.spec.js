@@ -680,15 +680,22 @@ describe("/api", () => {
             });
         });
 
-        it("status 400: returns an error message if inc_votes is missing", () => {
+        it("status 200: returns an unchanged message object if inc_votes is missing", () => {
           return request(app)
             .patch("/api/comments/1")
             .send({})
-            .expect(400)
+            .expect(200)
             .then(response => {
-              const { msg } = response.body;
-
-              expect(msg).to.equal("inc_votes is required in body");
+              const { comment } = response.body;
+              expect(comment).to.have.all.keys([
+                "comment_id",
+                "author",
+                "article_id",
+                "votes",
+                "created_at",
+                "body"
+              ]);
+              expect(comment.votes).to.equal(16);
             });
         });
 

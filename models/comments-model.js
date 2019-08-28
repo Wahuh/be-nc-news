@@ -65,15 +65,9 @@ const insertComment = (reqBody, article_id) => {
 };
 
 const updateComment = (comment_id, body) => {
-  const { inc_votes, ...rest } = body;
+  const { inc_votes } = body;
 
-  if (!inc_votes)
-    return Promise.reject({
-      status: 400,
-      msg: "inc_votes is required in body"
-    });
-
-  if (isNaN(inc_votes)) {
+  if (inc_votes && isNaN(inc_votes)) {
     return Promise.reject({
       status: 400,
       msg: "Invalid body parameter inc_votes"
@@ -88,7 +82,7 @@ const updateComment = (comment_id, body) => {
 
   return connection("comments")
     .where({ comment_id })
-    .increment({ votes: inc_votes })
+    .increment({ votes: inc_votes || 0 })
     .returning("*")
     .then(([comment]) => {
       if (comment) {
