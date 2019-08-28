@@ -182,27 +182,73 @@ describe("/api", () => {
         });
       });
 
-      // describe("/comments", () => {
-      //   describe("POST", () => {
-      //     it("status 201: returns an object with a key of comment containing the updated comment object", () => {
-      //       return request(app)
-      //         .post("/api/articles/1/comments")
-      //         .send({ username: "Thanh", body: "Fantastic article" })
-      //         .expect(201)
-      //         .then(response => {
-      //           const { comment } = response.body;
-      //           expect(comment).to.have.all.keys([
-      //             "comment_id",
-      //             "author",
-      //             "article_id",
-      //             "votes",
-      //             "created_at",
-      //             "body"
-      //           ]);
-      //         });
-      //     });
-      //   });
-      // });
+      describe("/comments", () => {
+        describe("POST", () => {
+          it("status 201: returns an object with a key of comment containing the updated comment object", () => {
+            return request(app)
+              .post("/api/articles/1/comments")
+              .send({ username: "lurker", body: "Fantastic article" })
+              .expect(201)
+              .then(response => {
+                const { comment } = response.body;
+                expect(comment).to.have.all.keys([
+                  "comment_id",
+                  "author",
+                  "article_id",
+                  "votes",
+                  "created_at",
+                  "body"
+                ]);
+              });
+          });
+
+          it("status 400: returns an error message if comment body is empty", () => {
+            return request(app)
+              .post("/api/articles/1/comments")
+              .send({ username: "lurker", body: "" })
+              .expect(400)
+              .then(response => {
+                const { msg } = response.body;
+                expect(msg).to.equal("You can't post an empty comment!");
+              });
+          });
+
+          it("status 400: returns an error message if username is empty", () => {
+            return request(app)
+              .post("/api/articles/1/comments")
+              .send({ username: "", body: "Fantastic article" })
+              .expect(400)
+              .then(response => {
+                const { msg } = response.body;
+                expect(msg).to.equal(
+                  "You can't post a comment without a username!"
+                );
+              });
+          });
+
+          it("status 404: returns an error message if the article_id does not exist", () => {
+            return request(app)
+              .post("/api/articles/9000/comments")
+              .send({ username: "lurker", body: "Fantastic article" })
+              .expect(404)
+              .then(response => {
+                const { msg } = response.body;
+                expect(msg).to.equal("Article not found");
+              });
+          });
+
+          it("status 422: returns an error message if the username does not exist", () => {
+            return request(app)
+              .post("/api/articles/1/comments")
+              .send({ username: "Thanh", body: "Fantastic article" })
+              .expect(422)
+              .then(response => {
+                const { msg } = response.body;
+                expect(msg).to.equal("Unprocessable entity");
+              });
+          });
+        });
+      });
     });
   });
 });
