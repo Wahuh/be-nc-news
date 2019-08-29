@@ -11,6 +11,18 @@ describe("/api", () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
 
+  describe("GET", () => {
+    it("status 200: returns an json representation of all the available endpoints of the api", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(response => {
+          const { api } = response.body;
+          expect(api).to.be.an("object");
+        });
+    });
+  });
+
   describe("INVALID METHODS", () => {
     it("status 405: returns an error message when client uses an invalid message", () => {
       const methods = ["patch", "post", "delete", "put"];
@@ -125,6 +137,16 @@ describe("/api", () => {
           });
       });
 
+      it("status 200: returns an array of article objects limited to 10 by default", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(response => {
+            const { articles } = response.body;
+            expect(articles.length).to.equal(10);
+          });
+      });
+
       it("status 200: returns an array of article objects sorted by created_at in descending order by default", () => {
         return request(app)
           .get("/api/articles")
@@ -144,7 +166,7 @@ describe("/api", () => {
             .expect(200)
             .then(response => {
               const { articles } = response.body;
-              // const commentCountToNumber = articles.map(article => ({
+              // const commentCountToNumber/articles?sort = articles.map(article => ({
               //   ...article,
               //   comment_count: +article.comment_count
               // }));
