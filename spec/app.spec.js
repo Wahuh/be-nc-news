@@ -7,6 +7,8 @@ const chai = require("chai");
 const { expect } = chai;
 chai.use(require("chai-sorted"));
 
+const apiData = require("../endpoints.json");
+
 describe("/api", () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
@@ -18,7 +20,7 @@ describe("/api", () => {
         .expect(200)
         .then(response => {
           const { api } = response.body;
-          expect(api).to.be.an("object");
+          expect(api).to.deep.equal(apiData);
         });
     });
   });
@@ -144,6 +146,17 @@ describe("/api", () => {
           .then(response => {
             const { articles } = response.body;
             expect(articles.length).to.equal(10);
+          });
+      });
+
+      it("status 200: returns an array of article objects on a specific page limited by the default of 10", () => {
+        return request(app)
+          .get("/api/articles?p=2")
+          .expect(200)
+          .then(response => {
+            const { articles } = response.body;
+            expect(articles.length).to.equal(10);
+            // const [firstArticle] = articles;
           });
       });
 
