@@ -10,9 +10,12 @@ const selectArticles = query => {
       return Promise.reject({ status: 400, msg: "Invalid order query" });
     }
   }
-  const promises = [topicExists({ slug: topic }), userExists({ username: author })];
+  const promises = [
+    topicExists({ slug: topic }),
+    userExists({ username: author })
+  ];
   return Promise.all(promises).then(() => {
-    return connection
+    const articlesPromise = connection
       .select("articles.*")
       .modify(query => {
         if (author) {
@@ -28,6 +31,12 @@ const selectArticles = query => {
       .groupBy("articles.article_id")
       .limit(10)
       .orderBy(sort_by || "created_at", order || "desc");
+
+    const countPromise = connection("articles").count("article_id", {
+      as: "total_count"
+    });
+
+    return Promise.all([articlesPromise, countPromise]);
   });
 };
 

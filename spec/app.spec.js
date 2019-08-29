@@ -139,6 +139,16 @@ describe("/api", () => {
           });
       });
 
+      it("status 200: has a total_count property that represents the total number of articles", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(response => {
+            const { total_count } = response.body;
+            expect(+total_count).to.equal(12);
+          });
+      });
+
       it("status 200: returns an array of article objects limited to 10 by default", () => {
         return request(app)
           .get("/api/articles")
