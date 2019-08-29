@@ -4,12 +4,16 @@ const commentsRouter = require("./comments-router");
 const topicsRouter = require("./topics-router");
 const usersRouter = require("./users-router");
 const { handle405Errors } = require("../errors");
+const { getApi } = require("../controllers/api-controller");
 
 apiRouter.use("/articles", articlesRouter);
 apiRouter.use("/comments", commentsRouter);
 apiRouter.use("/topics", topicsRouter);
 apiRouter.use("/users", usersRouter);
 
-apiRouter.route("/").all(handle405Errors);
+apiRouter
+  .route("/")
+  .get(getApi)
+  .all(handle405Errors);
 
 module.exports = apiRouter;
