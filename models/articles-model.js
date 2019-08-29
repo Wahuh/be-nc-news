@@ -14,30 +14,34 @@ const selectArticles = query => {
     topicExists({ slug: topic }),
     userExists({ username: author })
   ];
-  return Promise.all(promises).then(() => {
-    const articlesPromise = connection
-      .select("articles.*")
-      .modify(query => {
-        if (author) {
-          query.where({ "articles.author": author });
-        }
-        if (topic) {
-          query.where({ "articles.topic": topic });
-        }
-      })
-      .from("articles")
-      .leftJoin("comments", { "articles.article_id": "comments.article_id" })
-      .count("comments.article_id", { as: "comment_count" })
-      .groupBy("articles.article_id")
-      .limit(10)
-      .orderBy(sort_by || "created_at", order || "desc");
+  return Promise.all(promises)
+    .then(() => {
+      const articlesPromise = connection
+        .select("articles.*")
+        .modify(query => {
+          if (author) {
+            query.where({ "articles.author": author });
+          }
+          if (topic) {
+            query.where({ "articles.topic": topic });
+          }
+        })
+        .from("articles")
+        .leftJoin("comments", { "articles.article_id": "comments.article_id" })
+        .count("comments.article_id", { as: "comment_count" })
+        .groupBy("articles.article_id")
+        .limit(10)
+        .orderBy(sort_by || "created_at", order || "desc");
 
-    const countPromise = connection("articles").count("article_id", {
-      as: "total_count"
+      const countPromise = connection("articles").count("article_id", {
+        as: "total_count"
+      });
+
+      return Promise.all([articlesPromise, countPromise]);
+    })
+    .then(([articles, [{ total_count }]]) => {
+      return { articles, total_count };
     });
-
-    return Promise.all([articlesPromise, countPromise]);
-  });
 };
 
 const selectArticleById = ({ article_id }) => {
