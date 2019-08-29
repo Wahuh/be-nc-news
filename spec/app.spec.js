@@ -136,17 +136,23 @@ describe("/api", () => {
       });
 
       it("status 200: returns an array of article objects sorted by a sort_by query", () => {
-        return request(app)
-          .get("/api/articles?sort_by=comment_count")
-          .expect(200)
-          .then(response => {
-            const { articles } = response.body;
-            const commentCountToNumber = articles.map(article => ({
-              ...article,
-              comment_count: +article.comment_count
-            }));
-            expect(commentCountToNumber).to.be.descendingBy("comment_count");
-          });
+        //"comment_count",
+        const sorts = ["author"];
+        const promises = sorts.map(sort => {
+          return request(app)
+            .get(`/api/articles?sort_by=${sort}`)
+            .expect(200)
+            .then(response => {
+              const { articles } = response.body;
+              // const commentCountToNumber = articles.map(article => ({
+              //   ...article,
+              //   comment_count: +article.comment_count
+              // }));
+              //commentCountToNumber
+              expect(articles).to.be.descendingBy(sort);
+            });
+        });
+        return Promise.all(promises);
       });
 
       it("status 200: returns an array of article objects sorted by created_at in the order specified by the query", () => {
@@ -160,16 +166,20 @@ describe("/api", () => {
       });
 
       it("status 200: returns an array of article objects filtered by author", () => {
-        return request(app)
-          .get("/api/articles?author=butter_bridge")
-          .expect(200)
-          .then(response => {
-            const { articles } = response.body;
-            const shouldHaveSameAuthor = articles.every(
-              ({ author }) => author === "butter_bridge"
-            );
-            expect(shouldHaveSameAuthor).to.be.true;
-          });
+        const authors = ["butter_bridge", "icellusedkars"];
+        const promises = authors.map(authorName => {
+          return request(app)
+            .get(`/api/articles?author=${authorName}`)
+            .expect(200)
+            .then(response => {
+              const { articles } = response.body;
+              const shouldHaveSameAuthor = articles.every(
+                ({ author }) => author === authorName
+              );
+              expect(shouldHaveSameAuthor).to.be.true;
+            });
+        });
+        return Promise.all(promises);
       });
 
       it("status 200: returns an array of article objects filtered by topic", () => {
@@ -185,23 +195,23 @@ describe("/api", () => {
           });
       });
 
-      it("status 200: returns an empty array if there are no articles with the author query", () => {
+      it("status 404: returns an error message if the author does not exist", () => {
         return request(app)
           .get("/api/articles?author=jimbo")
-          .expect(200)
+          .expect(404)
           .then(response => {
-            const { articles } = response.body;
-            expect(articles).to.deep.equal([]);
+            const { msg } = response.body;
+            expect(msg).to.deep.equal("User not found");
           });
       });
 
-      it("status 200: returns an empty array if there are no articles with the topic query", () => {
+      it("status 404: returns an error message if the topic does not exist", () => {
         return request(app)
           .get("/api/articles?topic=bananas")
-          .expect(200)
+          .expect(404)
           .then(response => {
-            const { articles } = response.body;
-            expect(articles).to.deep.equal([]);
+            const { msg } = response.body;
+            expect(msg).to.deep.equal("Topic not found");
           });
       });
 

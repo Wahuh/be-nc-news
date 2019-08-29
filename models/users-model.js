@@ -11,4 +11,19 @@ const selectUserByUsername = username => {
     });
 };
 
-module.exports = { selectUserByUsername };
+const userExists = username => {
+  if (username) {
+    return connection("users")
+      .where({ username })
+      .first()
+      .then(exists => {
+        if (!exists) {
+          return Promise.reject({ status: 404, msg: "User not found" });
+        }
+      });
+  } else {
+    return Promise.resolve();
+  }
+};
+
+module.exports = { selectUserByUsername, userExists };
