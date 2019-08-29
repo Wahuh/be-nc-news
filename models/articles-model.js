@@ -10,7 +10,7 @@ const selectArticles = query => {
       return Promise.reject({ status: 400, msg: "Invalid order query" });
     }
   }
-  const promises = [topicExists(topic), userExists(author)];
+  const promises = [topicExists({ slug: topic }), userExists({ username: author })];
   return Promise.all(promises).then(() => {
     return connection
       .select("articles.*")
@@ -31,7 +31,7 @@ const selectArticles = query => {
   });
 };
 
-const selectArticleById = article_id => {
+const selectArticleById = ({ article_id }) => {
   if (isNaN(article_id)) {
     return Promise.reject({ status: 400, msg: "Invalid article id" });
   }
@@ -50,7 +50,7 @@ const selectArticleById = article_id => {
     });
 };
 
-const updateArticle = (body, article_id) => {
+const updateArticle = ({ body, article_id }) => {
   const { inc_votes } = body;
 
   if (isNaN(article_id)) {

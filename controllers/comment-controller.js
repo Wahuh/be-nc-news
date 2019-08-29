@@ -7,7 +7,7 @@ const {
 
 const postComment = (req, res, next) => {
   const { article_id } = req.params;
-  insertComment(req.body, article_id)
+  insertComment({ reqBody: req.body, article_id })
     .then(comment => {
       res.status(201).json({ comment });
     })
@@ -16,7 +16,7 @@ const postComment = (req, res, next) => {
 
 const getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  selectCommentsByArticleId(article_id, req.query)
+  selectCommentsByArticleId({ article_id, query: req.query })
     .then(comments => {
       res.status(200).json({ comments });
     })
@@ -25,7 +25,7 @@ const getCommentsByArticleId = (req, res, next) => {
 
 const patchComment = (req, res, next) => {
   const { comment_id } = req.params;
-  updateComment(comment_id, req.body)
+  updateComment({ comment_id, body: req.body })
     .then(comment => {
       res.status(200).json({ comment });
     })
@@ -34,11 +34,16 @@ const patchComment = (req, res, next) => {
 
 const deleteComment = (req, res, next) => {
   const { comment_id } = req.params;
-  removeComment(comment_id)
+  removeComment({ comment_id })
     .then(() => {
       res.status(204).end();
     })
     .catch(next);
 };
 
-module.exports = { patchComment, postComment, getCommentsByArticleId, deleteComment };
+module.exports = {
+  patchComment,
+  postComment,
+  getCommentsByArticleId,
+  deleteComment
+};

@@ -14,7 +14,7 @@ const getArticles = (req, res, next) => {
 
 const getArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  selectArticleById(article_id)
+  selectArticleById({ article_id })
     .then(article => {
       res.status(200).json({ article });
     })
@@ -23,7 +23,7 @@ const getArticleById = (req, res, next) => {
 
 const patchArticle = (req, res, next) => {
   const { article_id } = req.params;
-  updateArticle(req.body, article_id)
+  updateArticle({ body: req.body, article_id })
     .then(article => {
       res.status(200).json({ article });
     })

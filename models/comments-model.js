@@ -1,6 +1,6 @@
 const connection = require("../db/connection");
 
-const selectCommentsByArticleId = (article_id, query) => {
+const selectCommentsByArticleId = ({ article_id, query }) => {
   const { sort_by, order } = query;
   if (order) {
     if (order === "asc" || order === "desc") {
@@ -30,7 +30,7 @@ const selectCommentsByArticleId = (article_id, query) => {
     });
 };
 
-const insertComment = (reqBody, article_id) => {
+const insertComment = ({ article_id, reqBody }) => {
   const { username, body } = reqBody;
   if (!body)
     return Promise.reject({
@@ -64,7 +64,7 @@ const insertComment = (reqBody, article_id) => {
     });
 };
 
-const updateComment = (comment_id, body) => {
+const updateComment = ({ comment_id, body }) => {
   const { inc_votes } = body;
 
   if (inc_votes && isNaN(inc_votes)) {
@@ -96,7 +96,7 @@ const updateComment = (comment_id, body) => {
     });
 };
 
-const removeComment = comment_id => {
+const removeComment = ({ comment_id }) => {
   if (isNaN(comment_id)) {
     return Promise.reject({
       status: 400,

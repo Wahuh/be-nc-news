@@ -1,6 +1,6 @@
 const connection = require("../db/connection");
 
-const selectUserByUsername = username => {
+const selectUserByUsername = ({ username }) => {
   return connection
     .select("username", "avatar_url", "name")
     .from("users")
@@ -11,7 +11,7 @@ const selectUserByUsername = username => {
     });
 };
 
-const userExists = username => {
+const userExists = ({ username }) => {
   if (username) {
     return connection("users")
       .where({ username })

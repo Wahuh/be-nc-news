@@ -4,7 +4,7 @@ const selectTopics = () => {
   return connection.select("slug", "description").from("topics");
 };
 
-const topicExists = slug => {
+const topicExists = ({ slug }) => {
   if (slug) {
     return connection("topics")
       .where({ slug })
