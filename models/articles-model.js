@@ -4,6 +4,13 @@ const { userExists } = require("./users-model");
 
 const selectArticles = query => {
   const { sort_by, order, author, topic, p, limit } = query;
+
+  if (limit) {
+    if (isNaN(limit)) {
+      return Promise.reject({ status: 400, msg: "Invalid limit query" });
+    }
+  }
+
   if (order) {
     if (order === "asc" || order === "desc") {
     } else {

@@ -85,6 +85,19 @@ describe("/api", () => {
   });
 
   describe("/users", () => {
+    // describe("GET", () => {
+    //   it("status 200: returns an array of user objects", () => {
+    //     return request(app)
+    //       .get("/api/users")
+    //       .expect(200)
+    //       .then(response => {
+    //         const { users } = response.body;
+    //         const [user] = users;
+    //         expect(user).to.have.all.keys([]);
+    //       });
+    //   });
+    // });
+
     describe("/:username", () => {
       describe("GET", () => {
         it("status 200: returns a user object with username, avatar_url and name properties", () => {
@@ -258,6 +271,16 @@ describe("/api", () => {
               ({ topic }) => topic === "mitch"
             );
             expect(shouldHaveSameTopic).to.be.true;
+          });
+      });
+
+      it("status 400: returns an error message if limit is invalid", () => {
+        return request(app)
+          .get("/api/articles?limit=banana")
+          .expect(400)
+          .then(response => {
+            const { msg } = response.body;
+            expect(msg).to.equal("Invalid limit query");
           });
       });
 
