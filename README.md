@@ -14,19 +14,19 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-```
+```sh
 git clone https://github.com/Wahuh/be-nc-news.git
 ```
 
 Install dependencies
 
-```
+```sh
 npm install
 ```
 
 Create a `knexfile.js` in the root of your local respository that looks like this:
 
-```
+```js
 const { DB_URL } = process.env;
 const ENV = process.env.NODE_ENV || "development";
 
@@ -65,25 +65,25 @@ module.exports = { ...customConfig[ENV], ...baseConfig };
 
 Create your test and dev databases
 
-```
+```sh
 npm run setup-dbs
 ```
 
 Start the dev server
 
-```
+```sh
 npm run dev
 ```
 
 ## Running the tests
 
-```
+```sh
 npm t
 ```
 
 ## Deployment
 
-The server is deployed at: https://speedwagon-server.herokuapp.com/
+The server is hosted at: https://speedwagon-server.herokuapp.com/
 
 ## Built With
 
