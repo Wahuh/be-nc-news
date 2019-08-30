@@ -3,7 +3,7 @@ const { topicExists } = require("./topics-model");
 const { userExists } = require("./users-model");
 
 const selectArticles = query => {
-  const { sort_by, order, author, topic } = query;
+  const { sort_by, order, author, topic, p, limit } = query;
   if (order) {
     if (order === "asc" || order === "desc") {
     } else {
@@ -30,7 +30,8 @@ const selectArticles = query => {
         .leftJoin("comments", { "articles.article_id": "comments.article_id" })
         .count("comments.article_id", { as: "comment_count" })
         .groupBy("articles.article_id")
-        .limit(10)
+        .limit(limit || 10)
+        .offset((p - 1) * (limit || 10))
         .orderBy(sort_by || "created_at", order || "desc");
 
       const countPromise = connection("articles").count("article_id", {

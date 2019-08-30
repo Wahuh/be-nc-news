@@ -159,14 +159,24 @@ describe("/api", () => {
           });
       });
 
-      it("status 200: returns an array of article objects on a specific page limited by the default of 10", () => {
+      it("status 200: returns an array of article objects limited by a limit query", () => {
+        return request(app)
+          .get("/api/articles?limit=12")
+          .expect(200)
+          .then(response => {
+            const { articles } = response.body;
+            expect(articles.length).to.equal(12);
+          });
+      });
+
+      it("status 200: returns an array of article objects on a specific page", () => {
         return request(app)
           .get("/api/articles?p=2")
           .expect(200)
           .then(response => {
             const { articles } = response.body;
-            expect(articles.length).to.equal(10);
-            // const [firstArticle] = articles;
+            const [firstArticle] = articles;
+            expect(firstArticle.article_id).to.equal(11);
           });
       });
 
