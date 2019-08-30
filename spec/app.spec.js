@@ -590,6 +590,36 @@ describe("/api", () => {
               });
           });
 
+          it("status 200: returns an array of comment objects limited by a default of 10", () => {
+            return request(app)
+              .get("/api/articles/1/comments")
+              .expect(200)
+              .then(response => {
+                const { comments } = response.body;
+                expect(comments.length).to.equal(10);
+              });
+          });
+
+          it("status 200: returns an array of comment objects limited by a limit query", () => {
+            return request(app)
+              .get("/api/articles/1/comments?limit=13")
+              .expect(200)
+              .then(response => {
+                const { comments } = response.body;
+                expect(comments.length).to.equal(13);
+              });
+          });
+
+          it("status 200: returns an array of comments objects on a specific page", () => {
+            return request(app)
+              .get("/api/articles/1/comments?p=2")
+              .expect(200)
+              .then(response => {
+                const { comments } = response.body;
+                expect(comments.length).to.equal(3);
+              });
+          });
+
           it("status 200: returns an array of comment objects, sorted by created_at in descending order by default", () => {
             return request(app)
               .get("/api/articles/1/comments")

@@ -1,7 +1,7 @@
 const connection = require("../db/connection");
 
 const selectCommentsByArticleId = ({ article_id, query }) => {
-  const { sort_by, order } = query;
+  const { sort_by, order, limit, p } = query;
   if (order) {
     if (order === "asc" || order === "desc") {
     } else {
@@ -20,6 +20,8 @@ const selectCommentsByArticleId = ({ article_id, query }) => {
         return connection("comments")
           .select("comment_id", "votes", "created_at", "author", "body")
           .where({ article_id })
+          .limit(limit || 10)
+          .offset((p - 1) * (limit || 10))
           .orderBy(sort_by || "created_at", order || "desc");
       } else {
         return Promise.reject({
