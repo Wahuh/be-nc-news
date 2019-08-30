@@ -40,9 +40,14 @@ const handle405Errors = (req, res, next) => {
   res.status(405).json({ msg: "Invalid method" });
 };
 
+const handleRouteNotFound = (req, res, next) => {
+  next({ status: 404, msg: "Route not found" });
+};
+
 module.exports = {
   handle404Errors,
   handle400Errors,
   handle405Errors,
-  handle422Errors
+  handle422Errors,
+  handleRouteNotFound
 };

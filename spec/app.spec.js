@@ -8,11 +8,22 @@ const { expect } = chai;
 chai.use(require("chai-sorted"));
 
 const apiData = require("../endpoints.json");
+beforeEach(() => connection.seed.run());
+after(() => connection.destroy());
+
+describe("/notARoute", () => {
+  it("status 404: when route is not found", () => {
+    return request(app)
+      .get("/notARoute")
+      .expect(404)
+      .then(response => {
+        const { msg } = response.body;
+        expect(msg).to.equal("Route not found");
+      });
+  });
+});
 
 describe("/api", () => {
-  beforeEach(() => connection.seed.run());
-  after(() => connection.destroy());
-
   describe("GET", () => {
     it("status 200: returns an json representation of all the available endpoints of the api", () => {
       return request(app)
