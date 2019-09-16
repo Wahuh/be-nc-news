@@ -7,7 +7,9 @@ const {
   handle422Errors,
   handleRouteNotFound
 } = require("./errors");
+const cors = require("cors");
 
+app.use(cors());
 app.use(express.json());
 app.use("/api", apiRouter);
 app.all("/*", handleRouteNotFound);
