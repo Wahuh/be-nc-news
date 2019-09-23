@@ -15,7 +15,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Installing
 
 ```sh
-git clone https://github.com/Wahuh/be-nc-news.git
+git clone https://github.com/Wahuh/topical-news-api.git
 ```
 
 Install dependencies
