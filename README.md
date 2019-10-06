@@ -1,10 +1,14 @@
-# Reddit clone
+# Topical News Api
 
-This is an app inspired by reddit which uses React for the frontend paired with an Express + PostgresSQL backend.
+A server built with Express and PostgresSQL for a Reddit style app. It serves JSON responses to a React frontend.
+
+This server is hosted at: https://speedwagon-server.herokuapp.com/
+Try out the app at: https://topical-news.netlify.com/
+Frontend repo at: https://github.com/Wahuh/topical-news
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
 
@@ -21,6 +25,7 @@ git clone https://github.com/Wahuh/topical-news-api.git
 Install dependencies
 
 ```sh
+cd topical-news-api
 npm install
 ```
 
@@ -81,18 +86,10 @@ npm run dev
 npm t
 ```
 
-## Deployment
-
-The server is hosted at: https://speedwagon-server.herokuapp.com/
-
 ## Built With
 
 - Express
 - PostgresSQL
-
-## Contributing
-
-See CONTRIBUTING.md
 
 ## Authors
 
