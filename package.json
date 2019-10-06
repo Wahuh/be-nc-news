@@ -1,7 +1,7 @@
 {
-  "name": "be-nc-news",
+  "name": "topical-news",
   "version": "1.0.0",
-  "description": "bc-nc-news",
+  "description": "A server built with Express and PostgresSQL for a Reddit style app. It serves JSON responses to a React frontend.",
   "main": "index.js",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
